@@ -54,27 +54,26 @@ marked.setOptions({ breaks: true, gfm: true });
 // ===== ฟังก์ชัน Render Markdown + KaTeX =====
 // ===== ฟังก์ชัน Render Markdown + KaTeX (เวอร์ชันซ่อนสูตรกันบั๊ก) =====
 function renderContent(text) {
-    // 1. สร้างโกดังเก็บสูตรชั่วคราว
     const mathBlocks = [];
 
-    // ฟังก์ชันช่วยดึงสูตรไปซ่อนไว้
     const saveMath = (match) => {
         const id = `%%MATH_${mathBlocks.length}%%`;
         mathBlocks.push(match);
-        return id; // แปะป้าย placeholder ไว้แทน
+        return id;
     };
 
     let tempText = text;
 
-    // 2. ค้นหาและซ่อนสูตรคณิตศาสตร์ทุกรูปแบบ (เพื่อหนี marked.js)
+    // 1. ซ่อนสูตร (เรียงลำดับจาก "ตัวยาว" ไป "ตัวสั้น")
+    tempText = tempText.replace(/\$\$([\s\S]*?)\$\$/g, saveMath); // ซ่อน $$ ... $$
     tempText = tempText.replace(/\\\[([\s\S]*?)\\\]/g, saveMath); // ซ่อน \[ ... \]
     tempText = tempText.replace(/\\\(([\s\S]*?)\\\)/g, saveMath); // ซ่อน \( ... \)
-    tempText = tempText.replace(/\$\$([\s\S]*?)\$\$/g, saveMath); // ซ่อน $$ ... $$
+    tempText = tempText.replace(/\$([\s\S]*?)\$/g, saveMath);      // เพิ่ม: ซ่อน $ ... $ (Inline)
 
-    // 3. ปล่อยให้ marked.js จัดการตัวหนา/ตัวเอียง/ขึ้นบรรทัดใหม่ตามปกติ
+    // 2. แปลง Markdown เป็น HTML
     let html = marked.parse(tempText);
 
-    // 4. เอาสูตรคณิตศาสตร์ที่ซ่อนไว้ คืนร่างกลับเข้าไปใน HTML
+    // 3. คืนร่างสูตรกลับไป
     mathBlocks.forEach((math, index) => {
         html = html.replace(`%%MATH_${index}%%`, math);
     });
@@ -83,14 +82,13 @@ function renderContent(text) {
 }
 
 function applyKaTeX(el) {
-    // 5. ให้ KaTeX มาไล่เรนเดอร์สูตรที่เพิ่งคืนร่าง ให้กลายเป็นสมการสวยๆ
     if (window.renderMathInElement) {
         renderMathInElement(el, {
             delimiters: [
-                { left: '$$', right: '$$', display: true },
-                { left: '\\[', right: '\\]', display: true },
+                { left: '$$', right: '$$', display: true },   // ตัวนี้จะทำให้สูตรอยู่กลางและตัวใหญ่
+                { left: '\\[', right: '\\]', display: true },  // ตัวนี้ด้วย
                 { left: '\\(', right: '\\)', display: false },
-                { left: '$', right: '$', display: false }
+                { left: '$', right: '$', display: false }      // สูตรในบรรทัด (ตัวเล็ก)
             ],
             throwOnError: false
         });
@@ -228,10 +226,10 @@ $('#save-api-key-btn').addEventListener('click', async () => {
         if (res.ok) {
             localStorage.setItem('openai-api-key', key);
             localStorage.setItem('api-base-url', url);
-            
+
             // โหลดโมเดลที่ใช้งานได้จริงๆ เข้ามา
             await fetchAvailableModels();
-            
+
             apiModal.classList.remove('show');
         } else {
             const errData = await res.json().catch(() => ({}));
