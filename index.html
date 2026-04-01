@@ -163,28 +163,26 @@
             height: 20px;
         }
 
+        /* 1. บังคับตัวสูตรให้ขยายเต็มพื้นที่และจัดกลางเป๊ะ */
         .katex-display {
             display: block !important;
             text-align: center !important;
             margin: 1.5rem 0 !important;
-            /* เพิ่มระยะห่างบน-ล่างให้ดูโปร่ง */
             font-size: 1.5em !important;
-            /* ขยายขนาดให้ใหญ่ขึ้น 1.5 เท่า */
+            /* ตัวใหญ่สะใจ */
             width: 100% !important;
+            overflow-x: auto;
         }
 
-        /* กรณีที่ AI ส่งมาแค่ $ ตัวเดียว แต่เราอยากให้อ่านง่ายขึ้น */
-        .katex {
-            font-size: 1.1em;
-            /* ขยายขนาดสูตรในบรรทัดให้ใหญ่ขึ้นนิดนึง */
-        }
-
-        /* ปรับแต่งกล่องแชท AI ไม่ให้ไปบีบสูตร */
+        /* 2. สำคัญมาก: ปรับกล่องข้อความ AI ให้กว้างขึ้น */
         .msg.ai .bubble {
-            display: flex;
-            flex-direction: column;
-            min-width: 50%;
-            /* ให้กล่องกว้างพอที่จะจัดกลางสูตรได้ */
+            display: block !important;
+            /* เปลี่ยนจาก inline-block เป็น block */
+            min-width: 80% !important;
+            /* บังคับให้กล่องกว้างอย่างน้อย 80% */
+            max-width: 90% !important;
+            text-align: left;
+            /* ตัวหนังสือปกติชิดซ้าย */
         }
 
         /* ===== API Key Modal ===== */
