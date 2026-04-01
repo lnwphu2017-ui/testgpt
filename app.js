@@ -52,7 +52,6 @@ const modelMenu = $('#model-menu');
 marked.setOptions({ breaks: true, gfm: true });
 
 // ===== ฟังก์ชัน Render Markdown + KaTeX =====
-// ===== ฟังก์ชัน Render Markdown + KaTeX (เวอร์ชันซ่อนสูตรกันบั๊ก) =====
 function renderContent(text) {
     const mathBlocks = [];
 
@@ -64,11 +63,19 @@ function renderContent(text) {
 
     let tempText = text;
 
-    // 1. ซ่อนสูตร (เรียงลำดับจาก "ตัวยาว" ไป "ตัวสั้น")
+    // 🌟 ดัดนิสัย AI: บังคับแปลงรูปแบบสูตรประหลาดๆ ให้เป็น $$ ... $$ เพื่อให้เข้ากฎ .katex-display จัดกลางเสมอ
+    tempText = tempText.replace(/\\\[([\s\S]*?)\\\]/g, '$$$$$1$$$$'); // แปลง \[ \] เป็น $$ $$
+    tempText = tempText.replace(/\\begin\{equation\}([\s\S]*?)\\end\{equation\}/g, '$$$$$1$$$$');
+    tempText = tempText.replace(/\\begin\{align\}([\s\S]*?)\\end\{align\}/g, '$$$$\\begin{aligned}$1\\end{aligned}$$$$');
+    tempText = tempText.replace(/\\begin\{align\*\}([\s\S]*?)\\end\{align\*\}/g, '$$$$\\begin{aligned}$1\\end{aligned}$$$$');
+    
+    // 🌟 อัปเกรด $ สูตร $ ที่พิมพ์มาบรรทัดเดี่ยวๆ (ไม่มีข้อความอื่นปน) ให้กลายเป็น $$ ... $$ ทันที
+    tempText = tempText.replace(/(^|\n)\s*\$([^$\n]+?)\$\s*(?=\n|$)/g, '$1$$$$$2$$$$');
+
+    // 1. ซ่อนสูตรขั้นสุดท้าย (เรียงลำดับจาก "ตัวยาว" ไป "ตัวสั้น")
     tempText = tempText.replace(/\$\$([\s\S]*?)\$\$/g, saveMath); // ซ่อน $$ ... $$
-    tempText = tempText.replace(/\\\[([\s\S]*?)\\\]/g, saveMath); // ซ่อน \[ ... \]
     tempText = tempText.replace(/\\\(([\s\S]*?)\\\)/g, saveMath); // ซ่อน \( ... \)
-    tempText = tempText.replace(/\$([\s\S]*?)\$/g, saveMath);      // เพิ่ม: ซ่อน $ ... $ (Inline)
+    tempText = tempText.replace(/\$([\s\S]*?)\$/g, saveMath);      // ซ่อน $ ... $ (Inline)
 
     // 2. แปลง Markdown เป็น HTML
     let html = marked.parse(tempText);
