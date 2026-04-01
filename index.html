@@ -164,21 +164,27 @@
         }
 
         .katex-display {
-            text-align: center;
-            margin: 25px 0 !important;
-            /* เว้นระยะบน-ล่างให้ดูโปร่ง */
-            padding: 10px;
-            font-size: 1.3em;
-            /* ปรับขนาดสูตรให้ใหญ่ขึ้น (ลองปรับเป็น 1.5 ถ้ายังเล็กไป) */
-            background-color: rgba(255, 255, 255, 0.05);
-            /* ใส่พื้นหลังจางๆ ให้สูตรดูเด่น (ถ้าใช้ Dark Mode) */
-            border-radius: 8px;
+            display: block !important;
+            text-align: center !important;
+            margin: 1.5rem 0 !important;
+            /* เพิ่มระยะห่างบน-ล่างให้ดูโปร่ง */
+            font-size: 1.5em !important;
+            /* ขยายขนาดให้ใหญ่ขึ้น 1.5 เท่า */
+            width: 100% !important;
         }
 
-        /* ปรับให้รองรับหน้าจอมือถือ ถ้าสูตรยาวไปให้เลื่อนซ้ายขวาได้ */
-        .katex-display>.katex {
-            white-space: nowrap;
-            display: block;
+        /* กรณีที่ AI ส่งมาแค่ $ ตัวเดียว แต่เราอยากให้อ่านง่ายขึ้น */
+        .katex {
+            font-size: 1.1em;
+            /* ขยายขนาดสูตรในบรรทัดให้ใหญ่ขึ้นนิดนึง */
+        }
+
+        /* ปรับแต่งกล่องแชท AI ไม่ให้ไปบีบสูตร */
+        .msg.ai .bubble {
+            display: flex;
+            flex-direction: column;
+            min-width: 50%;
+            /* ให้กล่องกว้างพอที่จะจัดกลางสูตรได้ */
         }
 
         /* ===== API Key Modal ===== */
